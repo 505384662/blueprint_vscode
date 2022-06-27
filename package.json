@@ -1,0 +1,482 @@
+{
+    "name": "skynet-blueprint-luadebug",
+    "displayName": "skynet-blueprint-luadebug",
+    "description": "skynet-blueprint-luadebug",
+    "version": "0.5.2",
+    "icon": "res/icon.png",
+    "publisher": "tangzx",
+    "engines": {
+        "vscode": "^1.68.0"
+    },
+    "categories": [
+        "Programming Languages",
+        "Debuggers"
+    ],
+    "activationEvents": [
+        "onLanguage:lua",
+        "onDebug"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/505384662/VSCode-blueprintLua"
+    },
+    "bugs": {
+        "url": "https://github.com/505384662/VSCode-blueprintLua/issues"
+    },
+    "main": "./out/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "sbl.restartServer",
+                "title": "skynet-blueprint-luadebug: Restart Lua Server"
+            },
+            {
+                "command": "sbl.insertLuaDebugCode",
+                "title": "skynet-blueprint-luadebug: Insert luadebug Debugger Code"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "lua",
+                "path": "./snippets/snippets.json"
+            }
+        ],
+        "languages": [
+            {
+                "id": "lua",
+                "extensions": [
+                    ".lua"
+                ],
+                "aliases": [
+                    "blueprintLua"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "lua",
+                "scopeName": "source.lua",
+                "path": "./syntaxes/lua.tmLanguage.json"
+            }
+        ],
+        "breakpoints": [
+            {
+                "language": "lua"
+            }
+        ],
+        "debuggers": [
+            {
+                "type": "lua_attach",
+                "label": "Lua Attach Debug",
+                "program": "./out/debugger/blueprintAttachDebugAdapter.js",
+                "runtime": "node",
+                "configurationAttributes": {
+                    "attach": {
+                        "required": [
+                            "pid"
+                        ],
+                        "properties": {
+                            "pid": {
+                                "type": "number",
+                                "description": "%debug.attach.target_pid%",
+                                "default": 0
+                            },
+                            "processName": {
+                                "type": "string",
+                                "description": "%debug.attach.target_process%",
+                                "default": ""
+                            },
+                            "captureLog": {
+                                "type": "boolean",
+                                "description": "%debug.attach.captureLog%",
+                                "default": false
+                            }
+                        }
+                    }
+                },
+                "initialConfigurations": [
+                    {
+                        "type": "lua_attach",
+                        "request": "attach",
+                        "name": "%debug.attach.name%",
+                        "pid": 0,
+                        "processName": "",
+                        "captureLog": false
+                    }
+                ],
+                "configurationSnippets": [
+                    {
+                        "label": "%debug.attach.label%",
+                        "description": "%debug.attach.desc%",
+                        "body": {
+                            "type": "lua_attach",
+                            "request": "attach",
+                            "name": "%debug.attach.name%",
+                            "pid": 0,
+                            "processName": ""
+                        }
+                    }
+                ],
+                "languages": [
+                    "lua"
+                ]
+            },
+            {
+                "type": "lua_launch",
+                "label": "Lua Launch Debug",
+                "program": "./out/debugger/blueprintLaunchDebugAdapter.js",
+                "runtime": "node",
+                "configurationAttributes": {
+                    "launch": {
+                        "required": [
+                            "program",
+                            "workingDir",
+                            "arguments",
+                            "useWindowsTerminal"
+                        ],
+                        "properties": {
+                            "program": {
+                                "type": "string",
+                                "description": "%debug.launch.program%",
+                                "default": ""
+                            },
+                            "workingDir": {
+                                "type": "string",
+                                "description": "%debug.launch.workingDir%",
+                                "default": ""
+                            },
+                            "arguments": {
+                                "type": "array",
+                                "description": "%debug.launch.arguments%",
+                                "default": []
+                            },
+                            "blockOnExit": {
+                                "type": "boolean",
+                                "description": "%debug.launch.blockOnExit%",
+                                "default": true
+                            },
+                            "useWindowsTerminal": {
+                                "type": "boolean",
+                                "description": "%debug.launch.useWindowsTerminal%",
+                                "default": true
+                            }
+                        }
+                    }
+                },
+                "initialConfigurations": [
+                    {
+                        "type": "lua_launch",
+                        "request": "launch",
+                        "name": "%debug.launch.name%",
+                        "program": "",
+                        "workingDir": "",
+                        "arguments": [],
+                        "blockOnExit": true,
+                        "useWindowsTerminal": true
+                    }
+                ],
+                "configurationSnippets": [
+                    {
+                        "label": "%debug.launch.label%",
+                        "description": "%debug.launch.desc%",
+                        "body": {
+                            "type": "lua_launch",
+                            "request": "launch",
+                            "name": "%debug.launch.name%",
+                            "program": "",
+                            "workingDir": "",
+                            "arguments": [],
+                            "blockOnExit": true
+                        }
+                    }
+                ],
+                "languages": [
+                    "lua"
+                ]
+            },
+            {
+                "type": "lua_new",
+                "label": "Lua New Debugger",
+                "program": "./out/debugger/blueprintDebugAdapter.js",
+                "runtime": "node",
+                "configurationAttributes": {
+                    "launch": {
+                        "required": [
+                            "host",
+                            "port",
+                            "ideConnectDebugger"
+                        ],
+                        "properties": {
+                            "host": {
+                                "type": "string",
+                                "description": "host",
+                                "default": "localhost"
+                            },
+                            "port": {
+                                "type": "number",
+                                "description": "port",
+                                "default": 9966
+                            },
+                            "ideConnectDebugger": {
+                                "type": "boolean",
+                                "description": "连接方式",
+                                "default": true
+                            },
+                            "ext": {
+                                "type": "array",
+                                "description": "Lua文件后缀",
+                                "default": [
+                                    ".lua"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "initialConfigurations": [
+                    {
+                        "type": "lua_new",
+                        "request": "launch",
+                        "name": "Lua New Debug",
+                        "host": "localhost",
+                        "port": 9966,
+                        "ext": [
+                            ".lua",
+                            ".lua.txt",
+                            ".lua.bytes"
+                        ],
+                        "ideConnectDebugger": true
+                    }
+                ],
+                "configurationSnippets": [
+                    {
+                        "label": "Lua New Debug",
+                        "description": "Lua New Debug",
+                        "body": {
+                            "type": "lua_new",
+                            "request": "launch",
+                            "name": "Lua New Debug",
+                            "host": "localhost",
+                            "port": 9966,
+                            "ext": [
+                                ".lua",
+                                ".lua.txt",
+                                ".lua.bytes"
+                            ],
+                            "ideConnectDebugger": true
+                        }
+                    }
+                ],
+                "languages": [
+                    "lua"
+                ]
+            }
+        ],
+        "configuration": {
+            "title": "Lua",
+            "properties": {
+                "lua.java.home": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "default": null,
+                    "description": "%lua.java.home%"
+                },
+                "lua.source.roots": {
+                    "type": [
+                        "array"
+                    ],
+                    "default": [],
+                    "description": "%lua.source.roots%"
+                },
+                "lua.completion.caseSensitive": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%lua.completion.caseSensitive%"
+                },
+                "lua.codeLens": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%lua.codeLens%"
+                },
+                "lua.debugger.defaultProgram": {
+                    "type": "string",
+                    "default": "lua",
+                    "description": "%lua.debugger.defaultProgram%"
+                },
+                "lua.colors.parameter": {
+                    "type": "string",
+                    "default": "#9FFC"
+                },
+                "lua.colors.global": {
+                    "type": "string",
+                    "default": "#FF6699"
+                },
+                "lua.colors.doc_type": {
+                    "type": "string",
+                    "default": "#66CCFF"
+                },
+                "lua.colors.not_use": {
+                    "type": "string",
+                    "default": "gray"
+                },
+                "lua.colors.upvalue": {
+                    "type": "string",
+                    "default": "#a8c023"
+                },
+                "lua.hint.paramHint": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%lua.hint.paramHint%"
+                },
+                "lua.hint.localHint": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%lua.hint.localHint%"
+                },
+                "lua.hint.varargHint": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%lua.hint.varargHint%"
+                },
+                "lua.hint.overrideHint": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%lua.hint.overrideHint%"
+                },
+                "lua.constructorNames": {
+                    "type": "string",
+                    "default": "new;get",
+                    "description": "%lua.constructor.names%"
+                },
+                "lua.requireLikeFunctions": {
+                    "type": "string",
+                    "default": "require",
+                    "description": "%lua.requirelike.names%"
+                },
+                "lua.typecheck.anyTypeCanAssignToAnyDefineType": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%lua.typecheck.anyTypeCanAssignToAnyDefineType%"
+                },
+                "lua.typecheck.defineAnyTypeCanBeAssignedByAnyVariable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%lua.typecheck.defineAnyTypeCanBeAssignedByAnyVariable%"
+                },
+                "lua.typecheck.defineTypeCanReceiveNilType": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%lua.typecheck.defineTypeCanReceiveNilType%"
+                },
+                "lua.inspections.undeclaredVariable": {
+                    "type": "string",
+                    "enum": [
+                        "None",
+                        "Warning",
+                        "Error"
+                    ],
+                    "default": "None",
+                    "description": "%lua.inspections.undeclaredVariable%",
+                    "enumDescriptions": [
+                        "%lua.inspections.level.none%",
+                        "%lua.inspections.level.warning%",
+                        "%lua.inspections.level.error%"
+                    ]
+                },
+                "lua.inspections.fieldValidation": {
+                    "type": "string",
+                    "enum": [
+                        "None",
+                        "Warning",
+                        "Error"
+                    ],
+                    "default": "None",
+                    "description": "%lua.inspections.fieldValidation%",
+                    "enumDescriptions": [
+                        "%lua.inspections.level.none%",
+                        "%lua.inspections.level.warning%",
+                        "%lua.inspections.level.error%"
+                    ]
+                },
+                "lua.inspections.parameterValidation": {
+                    "type": "string",
+                    "enum": [
+                        "None",
+                        "Warning",
+                        "Error"
+                    ],
+                    "default": "None",
+                    "description": "%lua.inspections.parameterValidation%",
+                    "enumDescriptions": [
+                        "%lua.inspections.level.none%",
+                        "%lua.inspections.level.warning%",
+                        "%lua.inspections.level.error%"
+                    ]
+                },
+                "lua.inspections.assignValidation": {
+                    "type": "string",
+                    "enum": [
+                        "None",
+                        "Warning",
+                        "Error"
+                    ],
+                    "default": "None",
+                    "description": "%lua.inspections.assignValidation%",
+                    "enumDescriptions": [
+                        "%lua.inspections.level.none%",
+                        "%lua.inspections.level.warning%",
+                        "%lua.inspections.level.error%"
+                    ]
+                },
+                "lua.inspections.deprecated": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%lua.inspections.deprecated%"
+                }
+            }
+        },
+        "configurationDefaults": {
+            "[lua]": {
+                "editor.quickSuggestions": {
+                    "other": true,
+                    "comments": true,
+                    "strings": true
+                }
+            }
+        },
+        "jsonValidation": [
+            {
+                "fileMatch": "blueprint.config.json",
+                "url": "./syntaxes/blueprint.config.schema.json"
+            }
+        ],
+        "colors": []
+    },
+    "scripts": {
+        "vscode:prepublish": "node ./build/prepare-version && npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/mocha": "^9.1.0",
+        "@types/node": "^17.0.45",
+        "@types/vscode": "1.68.0",
+        "download": "^7.1.0",
+        "eslint": "^8.18.0",
+        "filecopy": "^4.0.2",
+        "ts-node": "^10.8.1",
+        "tslib": "^2.4.0",
+        "typescript": "^4.7.4",
+        "typescript-eslint-parser": "^22.0.0"
+    },
+    "dependencies": {
+        "iconv-lite": "^0.6.3",
+        "smart-buffer": "^4.0.1",
+        "vscode-debugadapter": "1.51.0",
+        "vscode-debugprotocol": "1.51.0",
+        "vscode-languageclient": "8.0.2-next.3"
+    }
+}

@@ -1,0 +1,12 @@
+
+*.iml
+.gradle
+.idea
+temp
+/debugger/blueprint.lua
+/debugger/blueprint/linux
+/debugger/blueprint/mac
+/debugger/blueprint/windows
+/server
+/package-lock.json
+/temp
