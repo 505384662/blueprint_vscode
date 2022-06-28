@@ -19,7 +19,7 @@ async function downloadDepends() {
         downloadTo(`${config.blueprintDebuggerUrl}/${config.blueprintDebuggerVersion}/darwin-x64.zip`, 'temp/darwin-x64.zip'),
         downloadTo(`${config.blueprintDebuggerUrl}/${config.blueprintDebuggerVersion}/win32-x86.zip`, 'temp/win32-x86.zip'),
         downloadTo(`${config.blueprintDebuggerUrl}/${config.blueprintDebuggerVersion}/win32-x64.zip`, 'temp/win32-x64.zip'),
-        downloadTo(`${config.lanServerUrl}/${config.lanServerVersion}/EmmyLua-LS-all.jar`, 'temp/EmmyLua-LS-all.jar'),
+        downloadTo(`${config.lanServerUrl}/${config.lanServerVersion}/BluePrintLua-LS-all.jar`, 'temp/BluePrintLua-LS-all.jar'),
     ]);
 }
 
@@ -40,7 +40,7 @@ async function build() {
     await decompress('temp/win32-x64.zip', 'debugger/blueprint/windows/x64/');
 
     // ls
-    await fc('temp/EmmyLua-LS-all.jar', 'server/EmmyLua-LS-all.jar', { mkdirp: true });
+    await fc('temp/BluePrintLua-LS-all.jar', 'server/BluePrintLua-LS-all.jar', { mkdirp: true });
 }
 
 build().catch(console.error);

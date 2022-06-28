@@ -4,7 +4,7 @@
     "description": "skynet-blueprint-luadebug",
     "version": "0.5.2",
     "icon": "res/icon.png",
-    "publisher": "tangzx",
+    "publisher": "skynet-blueprint-luadebug",
     "engines": {
         "vscode": "^1.68.0"
     },

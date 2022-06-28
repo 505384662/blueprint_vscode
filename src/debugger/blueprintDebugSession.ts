@@ -63,14 +63,14 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
                 this.sendResponse(response);
                 this.onConnect(this.client);
                 this.readClient(client);
-                this.sendEvent(new Event('onNewConnection'));
+                this.sendEvent(new Event('onNewConnection\n'));
             })
                 .listen(args.port, args.host)
                 .on('listening', () => {
-                    this.sendEvent(new OutputEvent(`Server(${args.host}:${args.port}) open successfully, wait for connection...\n`));
+                    this.sendEvent(new OutputEvent(`Server(host:[${args.host}] port:[${args.port}]) open successfully, wait for connection...\n`));
                 })
                 .on('error', err => {
-                    this.sendEvent(new OutputEvent(`${err}`, 'stderr'));
+                    this.sendEvent(new OutputEvent(`${err}`, 'stderr\n'));
                     response.success = false;
                     response.message = `${err}`;
                     this.sendResponse(response);
@@ -96,7 +96,7 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
 
     protected customRequest(command: string, response: DebugProtocol.Response, args: any): void {
         if (command === 'stopWaitConnection') {
-            this.sendEvent(new OutputEvent('---> stop'));
+            this.sendEvent(new OutputEvent('---> stop\n'));
             this.sendEvent(new TerminatedEvent());
         }
         else {
@@ -105,7 +105,7 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
     }
 
     protected onConnect(client: net.Socket) {
-        this.sendEvent(new OutputEvent(`${client.remoteAddress}:${client.remotePort} Connect end.\n`));
+        this.sendEvent(new OutputEvent(`remoteAddress:[${client.remoteAddress}] remotePort:[${client.remotePort}] Connect end.\n`));
         this.client = client;
 
         const extPath = this.extensionPath;
@@ -200,8 +200,9 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
 
     protected sendMessage(msg: { cmd: proto.MessageCMD }) {
         if (this.client) {
-            this.sendEvent(new OutputEvent(`[sendMessage] cmd[${msg.cmd}] local[${this.client.localAddress}:${this.client.localPort}]
-            remote[${this.client.remoteAddress}:${this.client.remotePort}]\n`));
+            this.sendEvent(new OutputEvent(`[sendMessage] msg.cmd:[${msg.cmd}] localAddress:[${this.client.localAddress} localPort:[${this.client.localPort}]\n`));
+            this.sendEvent(new OutputEvent(`[sendMessage] msg.cmd:[${msg.cmd}] remoteAddress:[${this.client.remoteAddress} remotePort:[${this.client.remotePort}]\n`));
+
             this.client.write(`${msg.cmd}\n`);
             this.client.write(`${JSON.stringify(msg)}\n`);
         }
@@ -247,11 +248,11 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
 
             const localValueStack = new blueprintLocalValueStack(stackData);
             let num1 = this.handles.create(localValueStack);
-            this.sendEvent(new OutputEvent(`[scopesRequest] num:${num1} ${args.frameId}\n`));
+            this.sendEvent(new OutputEvent(`[scopesRequest] num1:[${num1}] args.frameId:[${args.frameId}]\n`));
 
             const upValueStack = new blueprintUpValueStack(stackData);
             let num2 = this.handles.create(upValueStack);
-            this.sendEvent(new OutputEvent(`[scopesRequest] num:${num2} ${args.frameId}\n`));
+            this.sendEvent(new OutputEvent(`[scopesRequest] num2:[${num2}] args.frameId:[${args.frameId}]\n`));
 
             response.body = {
                 scopes: [
@@ -286,17 +287,16 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
     protected async setVariableRequest(response: DebugProtocol.SetVariableResponse, args: DebugProtocol.SetVariableArguments) {
         if (this.breakNotify) {
             const node = this.handles.get(args.variablesReference);
-            this.sendEvent(new OutputEvent(`[setVariableRequest] expr3333 ${node}`));
+            this.sendEvent(new OutputEvent(`[setVariableRequest] node:[${node}]\n`));
             let Variable = node.getIVariable(this, args.name);
-            this.sendEvent(new OutputEvent(`[setVariableRequest] expr5555 ${Variable}`));
+            this.sendEvent(new OutputEvent(`[setVariableRequest] Variable:[${Variable}]\n`));
             if (undefined !== Variable) {
-                this.sendEvent(new OutputEvent(`[setVariableRequest] expr1111 ${Variable}`));
                 let expr = node.getTableExpr(this);
                 if (Variable.valueType === proto.ValueType.TTABLE && undefined !== expr) {
                     let arrStr = expr.split(".");
-                    this.sendEvent(new OutputEvent(`arrstr:${arrStr.length}`));
+                    this.sendEvent(new OutputEvent(`arrStr.length:[${arrStr.length}]\n`));
                     if (0 < arrStr.length) {
-                        let retStr = `set [${arrStr[0]}] ${arrStr[0]}`;
+                        let retStr = `set[${arrStr[0]}]${arrStr[0]}`;
                         for (let index = 1; index < arrStr.length; index++) {
                             var re = /\[/gi;
                             let key = (-1 !== arrStr[index].search(re)) ? `${arrStr[index]}` : `.${arrStr[index]}`;
@@ -307,11 +307,11 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
                         var re2 = /\[/gi;
                         retStr += (-1 !== args.name.search(re2)) ? `${args.name}` : `.${args.name}`;
 
-                        this.sendSetVariableReq(this.currentFrameId, `${retStr}=${args.value}`);
+                        this.sendSetVariableReq(this.currentFrameId, `${retStr} = ${args.value}`);
                     }
                 }
                 else {
-                    this.sendSetVariableReq(this.currentFrameId, `set ${args.name}=${args.value}`);
+                    this.sendSetVariableReq(this.currentFrameId, `set ${args.name} = ${args.value}`);
                 }
             }
         }
@@ -322,7 +322,7 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
     //     if (this.breakNotify) {
     //         const node = this.handles.get(args.variablesReference);
 
-    //         this.sendEvent(new OutputEvent(`[variablesRequest] variablesReference:${args.variablesReference}\n`));
+    //         this.sendEvent(new OutputEvent(`[variablesRequest] variablesReference: ${ args.variablesReference }\n`));
 
     //         if (args.variablesReference >= 10000 && args.variablesReference < 20000) {
     //             children = await node.computeLocalChildren(this);
@@ -335,7 +335,7 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
 
     //     for (let i of children) {
     //         let x = i.toVariable(this);
-    //         this.sendEvent(new OutputEvent(`[variablesRequest] children:${x.name}\n`));
+    //         this.sendEvent(new OutputEvent(`[variablesRequest] children: ${ x.name }\n`));
     //         response.body = {
     //             variables: children.map(v => v.toVariable(this))
     //         };
@@ -347,14 +347,14 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
 
     protected async variablesRequest(response: DebugProtocol.VariablesResponse, args: DebugProtocol.VariablesArguments): Promise<void> {
         if (this.breakNotify) {
-            this.sendEvent(new OutputEvent(`[variablesRequest] variablesReference:${args.variablesReference}
-            filter:${args.filter} start:${args.start} count:${args.count} format:${args.format}\n`));
+            this.sendEvent(new OutputEvent(`[variablesRequest] variablesReference:[${args.variablesReference}]
+            filter:[${args.filter}] start:[${args.start}] count:[${args.count}] format:[${args.format}]\n`));
             const node = this.handles.get(args.variablesReference);
             const children = await node.computeChildren(this);
 
             let variables = children.map(v => v.toVariable(this));
             variables.forEach(element => {
-                this.sendEvent(new OutputEvent(`[variablesRequest] name:${element.name}\n`));
+                this.sendEvent(new OutputEvent(`[variablesRequest] name:[${element.name}]\n`));
             });
 
             response.body = {
@@ -366,7 +366,7 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
     }
 
     protected async evaluateRequest(response: DebugProtocol.EvaluateResponse, args: DebugProtocol.EvaluateArguments): Promise<void> {
-        this.sendEvent(new OutputEvent(`[evaluateRequest] expression:${args.expression}`));
+        this.sendEvent(new OutputEvent(`[evaluateRequest] expression:[${args.expression}]\n`));
         const evalResp = await this.eval(args.expression, 0);
         if (evalResp.success) {
             const blueprintVar = new blueprintVariable(evalResp.value);
@@ -409,7 +409,7 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
     }
 
     protected setBreakPointsRequest(response: DebugProtocol.SetBreakpointsResponse, args: DebugProtocol.SetBreakpointsArguments): void {
-        this.sendEvent(new OutputEvent(`[setBreakPointsRequest] source:${args.source}`));
+        this.sendEvent(new OutputEvent(`[setBreakPointsRequest] source:[${args.source}]\n`));
         const source = args.source;
         const bpsProto: proto.IBreakPoint[] = [];
         if (source && source.path) {
@@ -447,7 +447,7 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
             cmd: proto.MessageCMD.AddBreakPointReq
         };
 
-        this.sendEvent(new OutputEvent(`[sendBreakpoints] source:${req}`));
+        this.sendEvent(new OutputEvent(`[sendBreakpoints] req:[${req}]\n`));
         this.sendMessage(req);
     }
 
