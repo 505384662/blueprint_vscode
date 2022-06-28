@@ -140,6 +140,7 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
             .on('error', err => this.onSocketClose());
     }
 
+
     protected onSocketClose() {
         if (this.client) {
             this.client.removeAllListeners();

@@ -12,9 +12,9 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
----@class blueprint
+---@class emmy
 ---@field createNode fun(): Variable
-local blueprint = {}
+local emmy = {}
 
 ---@class Variable
 ---@field query fun(self: Variable, obj: any, depth: number, queryHelper: boolean):void
@@ -48,7 +48,7 @@ local toluaHelper = {
                         for property, _ in pairs(getTab) do
                             if not propMap[property] then
                                 propMap[property] = true
-                                local v = blueprint.createNode()
+                                local v = emmy.createNode()
                                 v.name = property
                                 v:query(obj[property], depth - 1, true)
                                 parent:addChild(v)
@@ -57,7 +57,7 @@ local toluaHelper = {
                     end
                     mt = getmetatable(mt)
                     if mt then
-                        local super = blueprint.createNode()
+                        local super = emmy.createNode()
                         super.name = "base"
                         super.value = mt[".name"]
                         super.valueType = 9
@@ -100,7 +100,7 @@ local xluaDebugger = {
                                 local property = p.Name
                                 local value = obj[property]
 
-                                local v = blueprint.createNode()
+                                local v = emmy.createNode()
                                 v.name = property
                                 v:query(value, depth - 1, true)
                                 parent:addChild(v)
@@ -113,7 +113,7 @@ local xluaDebugger = {
                                 local property = p.Name
                                 local value = obj[property]
 
-                                local v = blueprint.createNode()
+                                local v = emmy.createNode()
                                 v.name = property
                                 v:query(value, depth - 1, true)
                                 parent:addChild(v)
@@ -122,7 +122,7 @@ local xluaDebugger = {
 
                         CSType = CSType.BaseType
                         if CSType then
-                            local super = blueprint.createNode()
+                            local super = emmy.createNode()
                             super.name = "base"
                             super.value = CSType.FullName
                             super.valueType = 9
@@ -154,7 +154,7 @@ local cocosLuaDebugger = {
                     for property, _ in pairs(mt) do
                         if not propMap[property] then
                             propMap[property] = true
-                            local v = blueprint.createNode()
+                            local v = emmy.createNode()
                             v.name = property
                             v:query(obj[property], depth - 1, true)
                             parent:addChild(v)
@@ -162,7 +162,7 @@ local cocosLuaDebugger = {
                     end
                     mt = getmetatable(mt)
                     if mt then
-                        local super = blueprint.createNode()
+                        local super = emmy.createNode()
                         super.name = "base"
                         super.value = mt[".classname"]
                         super.valueType = 9
@@ -179,22 +179,22 @@ local cocosLuaDebugger = {
 
 if tolua then
     if tolua.gettag then
-        blueprint = toluaHelper
+        emmy = toluaHelper
     else
-        blueprint = cocosLuaDebugger
+        emmy = cocosLuaDebugger
     end
 elseif xlua then
-    blueprint = xluaDebugger
+    emmy = xluaDebugger
 end
 
-local blueprintHelper = rawget(_G, "blueprintHelper")
-if blueprintHelper == nil then
-    rawset(_G, 'blueprintHelper', blueprint)
+local emmyHelper = rawget(_G, "emmyHelper")
+if emmyHelper == nil then
+    rawset(_G, 'emmyHelper', emmy)
 else
-    blueprintHelper.queryVariable = blueprint.queryVariable
+    emmyHelper.queryVariable = emmy.queryVariable
 end
 
-local blueprintHelperInit = rawget(_G, 'blueprintHelperInit')
-if blueprintHelperInit then
-    blueprintHelperInit()
+local emmyHelperInit = rawget(_G, 'emmyHelperInit')
+if emmyHelperInit then
+    emmyHelperInit()
 end
