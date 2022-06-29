@@ -186,7 +186,7 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
                     const stacks = this.breakNotify.stacks;
                     for (let i = 0; i < stacks.length; i++) {
                         const stack = stacks[i];
-                        this.sendEvent(new OutputEvent(`file:${stack.file}, line:${stack.line} ,frameId:${stack.frameId}\n`));
+                        this.sendEvent(new OutputEvent(`file:${stack.file} line:${stack.line} frameId:${stack.frameId}\n`));
                     }
                 }
 
