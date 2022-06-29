@@ -200,8 +200,8 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
 
     protected sendMessage(msg: { cmd: proto.MessageCMD }) {
         if (this.client) {
-            this.sendEvent(new OutputEvent(`[sendMessage] msg.cmd:[${msg.cmd}] localAddress:[${this.client.localAddress} localPort:[${this.client.localPort}]\n`));
-            this.sendEvent(new OutputEvent(`[sendMessage] msg.cmd:[${msg.cmd}] remoteAddress:[${this.client.remoteAddress} remotePort:[${this.client.remotePort}]\n`));
+            this.sendEvent(new OutputEvent(`[sendMessage] msg.cmd:[${msg.cmd}] localAddress:[${this.client.localAddress}] localPort:[${this.client.localPort}]\n`));
+            this.sendEvent(new OutputEvent(`[sendMessage] msg.cmd:[${msg.cmd}] remoteAddress:[${this.client.remoteAddress}] remotePort:[${this.client.remotePort}]\n`));
 
             this.client.write(`${msg.cmd}\n`);
             this.client.write(`${JSON.stringify(msg)}\n`);
@@ -409,7 +409,6 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
     }
 
     protected setBreakPointsRequest(response: DebugProtocol.SetBreakpointsResponse, args: DebugProtocol.SetBreakpointsArguments): void {
-        this.sendEvent(new OutputEvent(`[setBreakPointsRequest] source:[${args.source}]\n`));
         const source = args.source;
         const bpsProto: proto.IBreakPoint[] = [];
         if (source && source.path) {
@@ -435,6 +434,12 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
             this.breakpoints = this.breakpoints.filter(v => v.file !== path);
             this.breakpoints = this.breakpoints.concat(bpsProto);
         }
+
+        for (let i = 0; i < this.breakpoints.length; i++) {
+            const bp = this.breakpoints[i];
+            this.sendEvent(new OutputEvent(`[setBreakPointsRequest] file:[${bp.file}] line:[${bp.line}] condition:[${bp.condition}] hitCondition:[${bp.hitCondition}] logMessage:[${bp.logMessage}]\n`));
+        }
+
         this.sendBreakpoints();
         this.sendResponse(response);
     }
@@ -447,7 +452,6 @@ export class blueprintDebugSession extends DebugSession implements IblueprintSta
             cmd: proto.MessageCMD.AddBreakPointReq
         };
 
-        this.sendEvent(new OutputEvent(`[sendBreakpoints] req:[${req}]\n`));
         this.sendMessage(req);
     }
 
