@@ -2,7 +2,7 @@
     "name": "skynet-blueprint-luadebug",
     "displayName": "skynet-blueprint-luadebug",
     "description": "skynet-blueprint-luadebug",
-    "version": "0.5.2",
+    "version": "0.5.3",
     "icon": "res/icon.png",
     "publisher": "skynet-blueprint-luadebug",
     "engines": {
